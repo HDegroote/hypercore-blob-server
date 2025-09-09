@@ -351,7 +351,6 @@ module.exports = class HypercoreBlobServer {
   async _ondrive (info, res) {
     info.drive = info.key
     const core = await this._getCore(info.key, info, true)
-
     if (core === null) {
       res.statusCode = 404
       res.end()
@@ -370,6 +369,20 @@ module.exports = class HypercoreBlobServer {
     if (result === null) {
       res.statusCode = 404
       res.end()
+      return
+    }
+
+    if (info.metadata) {
+      // TODO: separate endpoint?
+      if (!result.value?.metadata) {
+        res.statusCode = 404
+        res.end()
+        return
+      }
+
+      res.setHeader('Content-Type', 'application/json')
+      res.statusCode = 200
+      res.end(JSON.stringify(result.value.metadata))
       return
     }
 
@@ -662,6 +675,7 @@ function decodeRequest (req) {
     result.filename = parts[0] !== '/' ? decodeURI(parts[0]) : null
 
     for (const p of parts[1].split('&')) {
+      if (p.startsWith('metadata=true')) result.metadata = true
       if (p.startsWith('token=')) result.token = p.slice(6)
       if (p.startsWith('key=')) result.key = HypercoreID.decode(p.slice(4))
       if (p.startsWith('drive=')) result.drive = HypercoreID.decode(p.slice(6))
