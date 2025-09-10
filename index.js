@@ -11,6 +11,7 @@ const ReadyResource = require('ready-resource')
 const resolveDriveFilename = require('./drive')
 const speedometer = require('speedometer')
 const Xache = require('xache')
+const { EventEmitter } = require('stream')
 
 const blobId = {
   preencode (state, b) {
@@ -246,8 +247,10 @@ class BlobMonitor extends BlobRef {
   }
 }
 
-module.exports = class HypercoreBlobServer {
+module.exports = class HypercoreBlobServer extends EventEmitter {
   constructor (store, opts = {}) {
+    super()
+
     const {
       port = 49833,
       host = '127.0.0.1',
@@ -314,6 +317,7 @@ module.exports = class HypercoreBlobServer {
   }
 
   async _onrequest (req, res) {
+    this.emit('request', req)
     if (req.method !== 'HEAD' && req.method !== 'GET') {
       req.socket.destroy()
       req.statusCode = 400
