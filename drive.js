@@ -34,7 +34,7 @@ async function resolveDriveFilename (core, key, version) {
 
   await bee.close()
 
-  return content === null ? null : { key: content, blob: entry.value.blob }
+  return content === null ? null : { key: content, blob: entry.value.blob, value: entry.value }
 }
 
 function generateContentKey (m, key) {

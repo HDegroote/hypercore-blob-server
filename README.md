@@ -1,5 +1,7 @@
 # hypercore-blob-server
 
+WARNING: this is a fork with some modifications you almost certianly do not need. Better to use the original.
+
 HTTP server for streaming hypercore blobs
 
 ```
